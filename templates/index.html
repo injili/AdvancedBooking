@@ -15,7 +15,7 @@
 
     <style>
         body{
-            height: 100vh;
+            height: auto;
         }
         .theeform {
              background-color: #ffffff;
@@ -111,24 +111,24 @@
             </div>
 
 
-            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-2">
+            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-2" data-aos-once="true">
                 <div class="form-group">
                     <div class="form-outline mb-2">
                         <label for="no_rooms">Number of Rooms</label>
-                        <input type="number" id="no_rooms" name="no_rooms" min="1" max="12" value="1" class="form-control" required>
+                        <input type="number" id="no_rooms" name="no_rooms" min="1" max="12" value="1" class="form-control" oninput="eraseSubsequent()" required>
                     </div>
 
-                    <button class="btn" type="button" onclick="updateConfig()">NEXT</button>
+                    <button class="btn" type="button" onclick="nextStep(2); updateConfig()">NEXT</button>
                 </div>
             </div>
 
-            <div id="room-configurations"></div>
+            <div id="step-3"></div>
 
-            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-4">
+            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-4" data-aos-once="true">
                 <div class="form-group">
                     <div class="form-outline mb-2">
-                        <label for="cost">Total</label>
-                        <input type="number" id="cost" name="cost" class="form-control" required>
+                        <label for="cost">Total in Ksh.</label>
+                        <input type="number" id="cost" name="cost" class="form-control" readonly required>
                     </div>
                     
                     <button class="btn" type="button" onclick="nextStep(4)">MAKE RESERVATION</button>
@@ -136,7 +136,7 @@
             </div>
 
 
-            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-5">
+            <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-5" data-aos-once="true">
                 <h3>Personal Information</h3>
                 <div class="form-group">
                     <div class="form-outline mb-2">
@@ -182,12 +182,15 @@
                     </select>
                 </div>
 
-                <button class="btn" type="button" onclick="nextStep(2)">PAY</button>
+                <button class="btn" type="button">PAY</button>
             </div-->
             
         </form>
     </section>
     <script>
+        let roomTotals = [];
+        let peopleTotals = [];
+
         function nextStep(step) {
             const nextStep = document.getElementById(`step-${step + 1}`);
             nextStep.style.display = "block";
@@ -195,7 +198,7 @@
 
         function updateConfig() {
             const noRooms = parseInt(document.getElementById('no_rooms').value);
-            const roomConfigurationsContainer = document.getElementById('room-configurations');
+            const roomConfigurationsContainer = document.getElementById('step-3');
 
             // Clear previous configurations
             roomConfigurationsContainer.innerHTML = '';
@@ -204,27 +207,27 @@
             for (let i = 1; i <= noRooms; i++) {
                 const roomConfiguration = `
 
-                    <div class="container theecontainer text-left" data-aos="fade-down-left" data-aos-duration="1000">
+                    <div class="container theecontainer text-left" data-aos="fade-down-left" data-aos-duration="1000" data-aos-once="true">
                     <h3>Room ${i}</h3>
                     <div class="form-group">
                         <div class="form-outline mb-2">
-                            <label for="adults">Adults</label>
-                            <input type="number" id="adults" name="adults" min="0" max="2" class="form-control">
+                            <label for="adults${i}">Adults</label>
+                            <input type="number" id="adults${i}" name="adults" min="0" max="2" value="0" class="form-control" oninput="forThisDiv(${i})">
                         </div>
 
                         <div class="form-outline mb-2">
-                            <label for="preeteens">Preteens</label>
-                            <input type="number" id="preteens" name="preteens" min="0" max="2" class="form-control">
+                            <label for="preeteens${i}">Preteens</label>
+                            <input type="number" id="preteens${i}" name="preteens" min="0" max="2" value="0" class="form-control" oninput="forThisDiv(${i})">
                         </div>
 
                         <div class="form-outline mb-2">
-                            <label for="kids">Kids</label>
-                            <input type="number" id="kids" name="kids" min="0" max="2" class="form-control">
+                            <label for="kids${i}">Kids</label>
+                            <input type="number" id="kids${i}" name="kids" min="0" max="2" value="0" class="form-control" oninput="forThisDiv(${i})">
                         </div>
 
                         <div class="form-outline mb-2">
-                            <label for="infants">Infants</label>
-                            <input type="number" id="infants" name="infants" min="0" max="2" class="form-control">
+                            <label for="infants${i}">Infants</label>
+                            <input type="number" id="infants${i}" name="infants" min="0" max="0" value="0" class="form-control">
                         </div>
 
                         <div class="form-outline mb-2">
@@ -238,48 +241,86 @@
                         </div>
 
                         </div>
-                        ${i === noRooms ? '<button class="btn" type="button" onclick="nextStep(3)">NEXT</button>' : ''}
-
+                        ${i === noRooms ? '<button class="btn" type="button" onclick="nextStep(3); calculateGrandTotal()">NEXT</button>' : ''}
                     </div>
                 `;
 
+                peopleTotals[i - 1] = 0
                 roomConfigurationsContainer.innerHTML += roomConfiguration;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get references to the input fields
-            const adultsInput = document.getElementById('adults');
-            const preteensInput = document.getElementById('preteens');
-            const kidsInput = document.getElementById('kids');
 
-            // Add event listeners to each input field
-            adultsInput.addEventListener('input', function () {
-                updateMaxValues(adultsInput);
-            });
+        function forThisDiv(roomNumber) {
 
-            preteensInput.addEventListener('input', function () {
-                updateMaxValues(preteensInput);
-            });
+            document.querySelectorAll('#step-4, #step-5').forEach(step => step.style.display = 'none');
 
-            kidsInput.addEventListener('input', function () {
-                updateMaxValues(kidsInput);
-            });
+            var adults = parseInt(document.getElementById('adults' + roomNumber).value);
+            var preteens = parseInt(document.getElementById('preteens' + roomNumber).value);
+            var kids = parseInt(document.getElementById('kids' + roomNumber).value);
 
-            // Function to update max values
-            function updateMaxValues(changedInput) {
-                // Get the current value of the changed input
-                const currentValue = parseInt(changedInput.value);
+            document.getElementById('adults' + roomNumber).max = 2 - preteens - kids;
+            document.getElementById('preteens' + roomNumber).max = 2 - adults - kids;
+            document.getElementById('kids' + roomNumber).max = 2 - adults - preteens;
 
-                // Set the new max values for other input fields
-                [adultsInput, preteensInput, kidsInput].forEach(otherInput => {
-                    if (otherInput !== changedInput) {
-                        otherInput.max = 2 - currentValue;
-                    }
-                });
+            if (adults > 0) {
+                document.getElementById('infants' + roomNumber).max = 2
             }
-        });
+            else {
+                document.getElementById('infants' + roomNumber).max = 0
+            }
 
+            const rackRate = 6500
+            const extraCharge = 1500
+
+            let totalRoomCost = 0
+
+            if ((adults + preteens + kids) == 1) {
+                totalRoomCost = rackRate;
+            }
+            else if ((adults + preteens + kids) == 2) {
+                if (adults > 0) {
+                    if (preteens == 1) {
+                        totalRoomCost = (0.75 * extraCharge) + rackRate
+                    }
+                    else if (kids == 1) {
+                        totalRoomCost = (0.5 * extraCharge) + rackRate
+                    }
+                    else {
+                        totalRoomCost = rackRate + extraCharge
+                    }
+                }
+                else if (preteens > 0) {
+                    if (kids == 1) {
+                        totalRoomCost = (0.5 * extraCharge) + rackRate
+                    }
+                    else {
+                        totalRoomCost = (0.75 * extraCharge) + rackRate
+                    }
+                }
+                else {
+                    totalRoomCost = (0.5 * extraCharge) + rackRate
+                }
+            }
+            roomTotals[roomNumber - 1] = totalRoomCost
+            peopleTotals[roomNumber - 1] = (adults + preteens + kids)
+        }
+
+        function calculateGrandTotal() {
+            if (peopleTotals.includes(0)) {
+                alert('Each room must have an occupant');
+                const nextStep = document.getElementById(`step-4`);
+                nextStep.style.display = "none";
+            }
+            else {
+                const grandTotal = roomTotals.reduce((acc, total) => acc + total, 0);
+                document.getElementById('cost').value = grandTotal;
+            }
+        }
+
+        function eraseSubsequent() {
+            document.querySelectorAll('#step-3, #step-4, #step-5').forEach(step => step.style.display = 'none');
+        } 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>  
