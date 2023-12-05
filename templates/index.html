@@ -18,10 +18,10 @@
             height: auto;
         }
         .theeform {
-             background-color: #ffffff;
+             background-color: #ffffff;/*
              display: flex;
              align-items: center;
-             justify-content: center;
+             justify-content: center;*/
              height: 100vh;
              margin: 0;
              margin-top: 200px;
@@ -121,9 +121,13 @@
                     <button class="btn" type="button" onclick="nextStep(2); updateConfig()">NEXT</button>
                 </div>
             </div>
+        </form>
 
+        <form onsubmit="submitRoomForm(event)">
             <div id="step-3"></div>
+        </form>
 
+        <form>
             <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-4" data-aos-once="true">
                 <div class="form-group">
                     <div class="form-outline mb-2">
@@ -169,8 +173,8 @@
                     </div>
         
                     <div class="form-outline mb-2">
-                        <label for="pass">ID/Passport Number</label>
-                        <input type="text" id="pass" name="pass" class="form-control" required>
+                        <label for="passport">ID/Passport Number</label>
+                        <input type="text" id="passport" name="passport" class="form-control" required>
                     </div>
                 </div>
 
@@ -183,13 +187,14 @@
                 </div>
 
                 <button class="btn" type="button">PAY</button>
-            </div-->
+            </div>
             
         </form>
     </section>
     <script>
         let roomTotals = [];
         let peopleTotals = [];
+        const noRooms = parseInt(document.getElementById('no_rooms').value);
 
         function nextStep(step) {
             const nextStep = document.getElementById(`step-${step + 1}`);
@@ -197,7 +202,6 @@
         }
 
         function updateConfig() {
-            const noRooms = parseInt(document.getElementById('no_rooms').value);
             const roomConfigurationsContainer = document.getElementById('step-3');
 
             // Clear previous configurations
@@ -241,7 +245,7 @@
                         </div>
 
                         </div>
-                        ${i === noRooms ? '<button class="btn" type="button" onclick="nextStep(3); calculateGrandTotal()">NEXT</button>' : ''}
+                        ${i === noRooms ? '<input class="btn" type="submit" value="NEXT" onclick="nextStep(3); calculateGrandTotal()">' : ''}
                     </div>
                 `;
 
@@ -250,6 +254,36 @@
             }
         }
 
+        function submitRoomForm(event) {
+            even.preventDefault();
+
+            const roomData = []
+
+            for (let i = 1; i <= noRooms; i++) {
+                const roomInfo = {
+                    adults: document.getElementById('adults${i}').value,
+                    preteens: document.getElementById('preteens$[i]').value,
+                    kids: document.getElementById('kids${i}').value,
+                    meal_plan: document.getElementById('meal${i}').value
+                };
+
+                roomData.push(roomInfo);
+            }
+
+            fetch('/store_rooms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json'
+                },
+                body: JSON.stringify({ rooms: roomData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                nextStep(3);
+                calculateGrandTotal();
+            })
+        }
 
         function forThisDiv(roomNumber) {
 
@@ -320,7 +354,7 @@
 
         function eraseSubsequent() {
             document.querySelectorAll('#step-3, #step-4, #step-5').forEach(step => step.style.display = 'none');
-        } 
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>  
