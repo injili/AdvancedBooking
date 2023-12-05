@@ -123,7 +123,7 @@
             </div>
         </form>
 
-        <form onsubmit="submitRoomForm(event)">
+        <form onsubmit="">
             <div id="step-3"></div>
         </form>
 
@@ -245,7 +245,7 @@
                         </div>
 
                         </div>
-                        ${i === noRooms ? '<input class="btn" type="submit" value="NEXT" onclick="nextStep(3); calculateGrandTotal()">' : ''}
+                        ${i === noRooms ? '<button class="btn" type="button" onclick="calculateGrandTotal()">NEXT</button>' : ''}
                     </div>
                 `;
 
@@ -254,15 +254,14 @@
             }
         }
 
-        function submitRoomForm(event) {
-            even.preventDefault();
+        function submitRoomForm() {
 
             const roomData = []
 
             for (let i = 1; i <= noRooms; i++) {
                 const roomInfo = {
                     adults: document.getElementById('adults${i}').value,
-                    preteens: document.getElementById('preteens$[i]').value,
+                    preteens: document.getElementById('preteens${i}').value,
                     kids: document.getElementById('kids${i}').value,
                     meal_plan: document.getElementById('meal${i}').value
                 };
@@ -280,8 +279,6 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                nextStep(3);
-                calculateGrandTotal();
             })
         }
 
@@ -349,6 +346,7 @@
             else {
                 const grandTotal = roomTotals.reduce((acc, total) => acc + total, 0);
                 document.getElementById('cost').value = grandTotal;
+                submitRoomForm()
             }
         }
 

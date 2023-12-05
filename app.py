@@ -25,5 +25,24 @@ def add_record():
         check_out = request.form['checkout']
         grandtotal = request.form['cost']
 
+@app.route('/store_rooms')
+def store_rooms():
+    data = request.json
+    rooms_data = data.get('rooms')
+    
+    for room_info in room_data:
+        room = DeluxeRoomBookings(
+            adults=room_info['adults'],
+            preteens=room_info['preteens'],
+            kids=room_info['kids'],
+            infants=room_info_info['infants'],
+            meal_plan=room_info['meal_plan']
+        )
+        db.session.add(room)
+
+    db.session.commit()
+    return jsonify({'message': 'Rooms stored successfully'})
+
+
 if __name__ == '__main__' :
     app.run(port=8888, debug=True)
