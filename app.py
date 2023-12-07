@@ -1,48 +1,76 @@
-from flask import Flask, render_template, session, redirect, url_for
-from datetime import datetime, timedelta
+from flask import Flask, render_template, session, request, redirect, url_for, jsonify, g
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timedelta
+import pytz
+from models import db, UserTable, DeluxeRoomBookings
 
 app = Flask(__name__)
 
-@app.route('/')
+"""
+PostgreSQL database configuration
+"""
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://injili:wzEotbnKTRV4BWxJAbLIFdpqYa6AWq27@dpg-cl86f8qvokcc73ashpig-a.oregon-postgres.render.com/booking_records'
+app.config['SECRET_KEY'] = '2c4fefa11c38904646a17df8ee85d3a5'
+app.config['SQLALCHCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
+east_african_time = pytz.timezone('Africa/Nairobi')
+
+@app.before_request
+def set_timezone():
+    g.timezone = east_african_time
+
+@app.route('/', strict_slashes=False)
 def home():
     return render_template('index.html')
 
-@app.route('/add')
-def add_record():
-    new_record = None
+@app.route('/store_data', methods=['POST'])
+def store_data():
+    try:
+        data = request.json
 
-    if request.method == 'POST':
-        fname = request.form['fname']
-        lname = request.form['lname']
-        email = request.form['email']
-        phone = request.form['phone_no']
-        nationality = request.form['nationality']
-        passport = request.form['passport']
-        gender = request.form['gender']
-        no_rooms = request.form['no_rooms']
-        check_in = request.form['checkin']
-        check_out = request.form['checkout']
-        grandtotal = request.form['cost']
+        user_data = data.get('user', {})
+        room_data = data.get('rooms', [])
 
-@app.route('/store_rooms')
-def store_rooms():
-    data = request.json
-    rooms_data = data.get('rooms')
-    
-    for room_info in room_data:
-        room = DeluxeRoomBookings(
-            adults=room_info['adults'],
-            preteens=room_info['preteens'],
-            kids=room_info['kids'],
-            infants=room_info_info['infants'],
-            meal_plan=room_info['meal_plan']
+        user = UserTable(
+            fname=user_data.get('fname'),
+            lname=user_data.get('lname'),
+            email=user_data.get('email'),
+            phone=user_data.get('phone'),
+            nationality=user_data.get('nationality'),
+            passport=user_data.get('passport'),
+            gender=user_data.get('gender'),
+            no_rooms=user_data.get('no_rooms'),
+            checkin=user_data.get('checkin'),
+            checkout=user_data.get('checkout'),
+            amount=user_data.get('amount')
         )
-        db.session.add(room)
+        db.session.add(user)
+        db.session.flush()
+        
+        for room_info in room_data:
+            room = DeluxeRoomBookings(
+                adults=room_info.get('adults', 0),
+                preteens=room_info.get('preteens', 0),
+                kids=room_info.get('kids', 0),
+                infants=room_info.get('infants', 0),
+                meal_plan=room_info.get('meal_plan', ''),
+                user=user
+            )
+            db.session.add(room)
 
-    db.session.commit()
-    return jsonify({'message': 'Rooms stored successfully'})
+        db.session.commit()
 
+        return jsonify({'message': 'Data stored successfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__' :
     app.run(port=8888, debug=True)

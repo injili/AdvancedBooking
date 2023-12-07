@@ -18,10 +18,10 @@
             height: auto;
         }
         .theeform {
-             background-color: #ffffff;/*
+             background-color: #ffffff;
              display: flex;
              align-items: center;
-             justify-content: center;*/
+             justify-content: center;
              height: 100vh;
              margin: 0;
              margin-top: 200px;
@@ -92,7 +92,7 @@
 </head>
 <body>
     <section class="theeform">
-        <form action="/add" method="POST">
+        <form>
             <div class="container theecontainer text-left" data-aos="fade-down-left" data-aos-duration="1000" id="step-1">
                 <h3>Check Availability</h3>
                 <div class="form-group">
@@ -106,7 +106,7 @@
                         <input type="date" id="checkout" name="checkout" class="form-control" required>
                     </div>
 
-                    <button class="btn" type="button" onclick="nextStep(1)">CHECK AVAILABILITY</button>
+                    <button class="btn" type="button" onclick="nextStep(1);">CHECK AVAILABILITY</button>
                 </div>
             </div>
 
@@ -121,13 +121,9 @@
                     <button class="btn" type="button" onclick="nextStep(2); updateConfig()">NEXT</button>
                 </div>
             </div>
-        </form>
 
-        <form onsubmit="">
             <div id="step-3"></div>
-        </form>
 
-        <form>
             <div class="container theecontainer text-left form-step" data-aos="fade-down-left" data-aos-duration="1000" id="step-4" data-aos-once="true">
                 <div class="form-group">
                     <div class="form-outline mb-2">
@@ -169,7 +165,7 @@
                 <div class="form-group">
                     <div class="form-outline mb-2">
                         <label for="nationality">Nationality</label>
-                        <input type="text" id="nationality" name="nationality" class="form-control" required>
+                        <select type="text" id="nationality" name="nationality" class="form-control" required></select>
                     </div>
         
                     <div class="form-outline mb-2">
@@ -186,7 +182,7 @@
                     </select>
                 </div>
 
-                <button class="btn" type="button">PAY</button>
+                <button class="btn" type="button" value="PAY" onclick="submitForms()">PAY NOW</button>
             </div>
             
         </form>
@@ -194,7 +190,48 @@
     <script>
         let roomTotals = [];
         let peopleTotals = [];
-        const noRooms = parseInt(document.getElementById('no_rooms').value);
+
+        document.getElementById('checkin').addEventListener('input', function() {
+            var checkinDate = new Date(this.value);
+            var today = new Date();
+            today.setDate(today.getDate() - 1)
+    
+            if (checkinDate < today) {
+                alert("Check-in date cannot be before today");
+                this.value = '';
+            } else {
+                document.getElementById('checkout').min = this.value;
+                document.getElementById('checkout').value = '';
+            }
+
+        });
+    
+        document.getElementById('checkout').addEventListener('change', function() {
+            var checkinDate = new Date(document.getElementById('checkin').value);
+            var checkoutDate = new Date(this.value);
+            var today = new Date()
+    
+            if (checkoutDate <= checkinDate || checkoutDate <= today) {
+                alert("Check-out date cannot be today or before the Check-in date");
+                this.value = '';
+            }
+        });
+
+        function updateNationalities() {
+            const nationalityDropdown = document.getElementById('nationality');
+
+            fetch('{{ url_for("static", filename="nationalities.json") }}')
+                .then(response => response.json())
+                .then(nationalities => {
+                    nationalities.forEach(nationality => {
+                        const option = document.createElement('option');
+                        option.value = nationality;
+                        option.text = nationality;
+                        nationalityDropdown.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching nationalites:', error));
+        }
 
         function nextStep(step) {
             const nextStep = document.getElementById(`step-${step + 1}`);
@@ -203,6 +240,7 @@
 
         function updateConfig() {
             const roomConfigurationsContainer = document.getElementById('step-3');
+            const noRooms = parseInt(document.getElementById('no_rooms').value);
 
             // Clear previous configurations
             roomConfigurationsContainer.innerHTML = '';
@@ -235,17 +273,17 @@
                         </div>
 
                         <div class="form-outline mb-2">
-                            <label for="meal">Meal Plan</label>
-                            <select id="meal" name="meal" class="form-control" onchange="" required>
-                                <option value="bandb">B&B</option>
-                                <option value="fullboard">Full Board</option>
-                                <option value="halfboard">Half Board</option>
-                                <option value="dayroom">Day Room</option>
+                            <label for="meal${i}">Meal Plan</label>
+                            <select id="meal${i}" name="meal${i}" class="form-control" onchange="" required>
+                                <option value="bed and breakfast">B&B</option>
+                                <option value="full board">Full Board</option>
+                                <option value="half board">Half Board</option>
+                                <option value="day room">Day Room</option>
                             </select>
                         </div>
 
                         </div>
-                        ${i === noRooms ? '<button class="btn" type="button" onclick="calculateGrandTotal()">NEXT</button>' : ''}
+                        ${i === noRooms ? '<button class="btn" type="button" onclick="calculateGrandTotal(); nextStep(3)">NEXT</button>' : ''}
                     </div>
                 `;
 
@@ -254,32 +292,82 @@
             }
         }
 
-        function submitRoomForm() {
+        // function submitRoomForm() {
 
+        //     const roomData = []
+
+        //     for (let i = 1; i <= noRooms; i++) {
+        //         const roomInfo = {
+        //             adults: document.getElementById('adults${i}').value,
+        //             preteens: document.getElementById('preteens${i}').value,
+        //             kids: document.getElementById('kids${i}').value,
+        //             meal_plan: document.getElementById('meal${i}').value
+        //         };
+
+        //         roomData.push(roomInfo);
+        //     }
+
+        //     fetch('/store_rooms', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type' : 'application/json'
+        //         },
+        //         body: JSON.stringify({ rooms: roomData })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log(data);
+        //     })
+        // }
+
+        function submitForms() {
+            const userData = {}
             const roomData = []
+            const noRooms = parseInt(document.getElementById('no_rooms').value);
 
             for (let i = 1; i <= noRooms; i++) {
                 const roomInfo = {
-                    adults: document.getElementById('adults${i}').value,
-                    preteens: document.getElementById('preteens${i}').value,
-                    kids: document.getElementById('kids${i}').value,
-                    meal_plan: document.getElementById('meal${i}').value
+                    adults: document.getElementById(`adults${i}`).value,
+                    preteens: document.getElementById(`preteens${i}`).value,
+                    kids: document.getElementById(`kids${i}`).value,
+                    infants: document.getElementById(`infants${i}`).value,
+                    meal_plan: document.getElementById(`meal${i}`).value
                 };
 
                 roomData.push(roomInfo);
             }
 
-            fetch('/store_rooms', {
+            userData.fname = document.getElementById('fname').value;
+            userData.lname = document.getElementById('lname').value;
+            userData.email = document.getElementById('email').value;
+            userData.phone= document.getElementById('contact').value;
+            userData.nationality = document.getElementById('nationality').value;
+            userData.passport = document.getElementById('passport').value;
+            userData.gender = document.getElementById('gender').value;
+            userData.no_rooms = document.getElementById('no_rooms').value;
+            userData.checkin = document.getElementById('checkin').value;
+            userData.checkout = document.getElementById('checkout').value;
+            userData.amount = document.getElementById('cost').value;
+
+            const combinedData = {
+                rooms: roomData,
+                user: userData
+            };
+
+            fetch('/store_data', {
                 method: 'POST',
                 headers: {
-                    'Content-Type' : 'application/json'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ rooms: roomData })
+                body: JSON.stringify(combinedData)
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                console.log('Data submitted successfully:', data);
             })
+            .catch(error => {
+                console.error('Error submitting user data', error);
+            });
         }
 
         function forThisDiv(roomNumber) {
@@ -340,19 +428,19 @@
         function calculateGrandTotal() {
             if (peopleTotals.includes(0)) {
                 alert('Each room must have an occupant');
-                const nextStep = document.getElementById(`step-4`);
-                nextStep.style.display = "none";
             }
             else {
                 const grandTotal = roomTotals.reduce((acc, total) => acc + total, 0);
                 document.getElementById('cost').value = grandTotal;
-                submitRoomForm()
+                nextStep(3);
             }
         }
 
         function eraseSubsequent() {
             document.querySelectorAll('#step-3, #step-4, #step-5').forEach(step => step.style.display = 'none');
         }
+
+        updateNationalities()
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>  
