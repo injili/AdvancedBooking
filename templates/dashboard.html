@@ -119,8 +119,7 @@
                                 <input value="0" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
                             </div>
                             <div class="md-3 col">
-                                <label for="dayroom" class="form-label">Day Room</label>
-                                <input value="0" type="text" class="form-control" id="dayroom" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                
                             </div>
                         </div>
                         <input type="submit" value="submit" class="btn btn-r">
@@ -130,22 +129,77 @@
                     </div>
                 </div>
                 <div class="neomorphic-border">
-                    <h3>Current Stats</h3>
-                    <div class="row">
-                        <div class="md-3 col">
-                            <h5>Suite Prices</h5>
+                    <h3>Standard Pricing</h3>
+                    <form>
+                        <div class="row">
+                            <div class="md-3 col">
+                                <h5>Suite Prices</h5>
+                                <label for="fullboard" class="form-label">Superior Deluxe Suite</label>
+                                <input value="6,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <label for="fullboard" class="form-label">Deluxe Suite</label>
+                                <input value="5,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="md-3 col">
+                                <h5>Extra Person Charge</h5>
+                                <label for="fullboard" class="form-label">Superior Deluxe Suite</label>
+                                <input value="1,500" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <label for="fullboard" class="form-label">Deluxe Suite</label>
+                                <input value="1,200" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="md-3 col">
+                                <h5>Meal Plan Prices</h5>
+                                <div class="row">
+                                    <div class="md-3 col">
+                                        <label for="fullboard" class="form-label">Bed and Breakfast</label>
+                                        <input value="2,500" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                        <label for="fullboard" class="form-label">Full Board</label>
+                                        <input value="4,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                    </div>
+                                    <div class="md-3 col">
+                                        <label for="fullboard" class="form-label">Half Board</label>
+                                        <input value="3,200" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="md-3 col">
-                            <h5>Extra Person Charge</h5>
+                    </form>
+                    <form>
+                        <h5>Suite Settings</h5>
+                        <div class="row">
+                            <div class="mb-3 col">
+                                <label for="standardsuite" class="form-label">Suite</label>
+                                <select id="standardsuite" name="standardsuite" class="form-select">
+                                    <option value="superior">Superior Deluxe Suite</option>
+                                    <option value="deluxe">Deluxe Suite</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 col">
+                                <label for="standardsuiteprice" class="form-label">Price per Night</label>
+                                <input value="0" type="text" class="form-control" id="standardsuiteprice" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="mb-3 col">
+                                <label for="standardextraperson" class="form-label">Extra Person Charge</label>
+                                <input value="0" type="text" class="form-control" id="standardextraperson" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
                         </div>
-                        <div class="md-3 col">
-                            <h5>Meal Plan Prices</h5>
+                        
+                        <h5>Meal Plans</h5>
+                        <div class="row">
+                            <div class="mb-3 col">
+                                <label for="standardbnb" class="form-label">Bed and Breakfast</label>
+                                <input value="0" type="text" class="form-control" id="standardbnb" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="mb-3 col">
+                                <label for="standardhalfboard" class="form-label">Half Board</label>
+                                <input value="0" type="text" class="form-control" id="standardhalfboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="mb-3 col">
+                                <label for="standardfullboard" class="form-label">Full Board</label>
+                                <input value="0" type="text" class="form-control" id="standardfullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
                         </div>
-                        <div class="md-3 col">
-                            <h5>Dates with Change</h5>
-                        </div>
-                    </div>
-                    Ut porttitor quis tellus non consequat. Phasellus euismod diam nec nibh iaculis, ut pretium orci mollis. Nam neque velit, vehicula sit amet mauris nec, ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum. ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum amet mauris necin ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum..
+                        <input type="submit" value="submit" class="btn btn-r">
+                    </form>
                 </div>
             </div>
         </div>
