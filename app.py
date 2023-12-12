@@ -48,6 +48,7 @@ def store_data():
             no_rooms=user_data.get('no_rooms'),
             checkin=user_data.get('checkin'),
             checkout=user_data.get('checkout'),
+            suite=user_data.get('suite'),
             amount=user_data.get('amount')
         )
         db.session.add(user)

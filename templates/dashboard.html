@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        body {
+            background-color: #fff;
+        }
+        h1 {
+            margin: 30px;
+        }
+        .neomorphic-border {
+            margin-top: 12px;
+            margin-bottom: 17px;
+            padding: 20px;
+            border-radius: 7px;
+            background: #ffffff;
+            box-shadow:  -6px 6px 59px #dedede,
+                        6px -6px 59px #ffffff;
+        }
+        .btn-r {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+    <body>
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasExampleLabel">MENU</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div>
+            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+          </div>
+          <hr>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Superior Deluxe</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Deluxe</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Analytics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">LogOut</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <main>
+        <div class="container">
+            <div class="row container-fluid">
+                <div class="col">
+                    <h1>The Admin Dashboard</h1>
+                </div>
+                <div class="col-md-2">
+                    <a class="btn neomorphic-border" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample"><i class="bi bi-menu-button-wide"></i> MENU</a>
+                </div>
+            </div>
+            <div class="row container-fluid">
+                <div class="col-md-8 align-items-center">
+                    <div class="neomorphic-border">
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget eros vel nisl fermentum luctus. Quisque convallis sem nec nisi vulputate venenatis. Nam eleifend nisl erat, id ornare dolor suscipit vel. Ut porttitor quis tellus non consequat. Phasellus euismod diam nec nibh iaculis, ut pretium orci mollis. Nam neque velit, vehicula sit amet mauris nec ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum.,
+                        </p>
+                    </div>
+                </div>
+                <div class="col align-items-center">
+                    <div class="neomorphic-border">
+                        <h3>ACTIONS</h3>
+                    <form>
+                        <div class="mb-3">
+                            <label for="thedates" class="form-label">Date Selection</label>
+                            <input type="text" class="form-control" id="thedates" name="daterange"/>
+                            <div id="thedates" class="form-text">Select the dates you want to apply changes to.</div>
+                        </div>
+                        <h5>SUITE SETTINGS</h5>
+                        <div class="mb-3 col">
+                            <label for="suite" class="form-label">Suite</label>
+                            <select id="suite" name="suite" class="form-select">
+                                <option value="superior">Superior Deluxe Suite</option>
+                                <option value="deluxe">Deluxe Suite</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="suiteprice" class="form-label">Price per Night</label>
+                            <input value="0" type="text" class="form-control" id="suiteprice" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                        </div>
+                        <div class="mb-3 col">
+                            <label for="extraperson" class="form-label">Extra Person Charge</label>
+                            <input value="0" type="text" class="form-control" id="extraperson" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                        </div>
+                        <h5>MEAL PLANS</h5>
+                        <div class="row">
+                            <div class="mb-3 col">
+                                <label for="bnb" class="form-label">Bed and Breakfast</label>
+                                <input value="0" type="text" class="form-control" id="bnb" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="mb-3 col">
+                                <label for="halfboard" class="form-label">Half Board</label>
+                                <input value="0" type="text" class="form-control" id="halfboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                              </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3 col">
+                                <label for="fullboard" class="form-label">Full Board</label>
+                                <input value="0" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                            <div class="md-3 col">
+                                <label for="dayroom" class="form-label">Day Room</label>
+                                <input value="0" type="text" class="form-control" id="dayroom" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            </div>
+                        </div>
+                        <input type="submit" value="submit" class="btn btn-r">
+                    </form>
+                    <hr>
+                    Lorem ipsum dolor sit amet,Nam  ut pretium orci mollis. Nam neque velilorem nec metus viverra, non efficitur ante interdum.
+                    </div>
+                </div>
+                <div class="neomorphic-border">
+                    <h3>Current Stats</h3>
+                    <div class="row">
+                        <div class="md-3 col">
+                            <h5>Suite Prices</h5>
+                        </div>
+                        <div class="md-3 col">
+                            <h5>Extra Person Charge</h5>
+                        </div>
+                        <div class="md-3 col">
+                            <h5>Meal Plan Prices</h5>
+                        </div>
+                        <div class="md-3 col">
+                            <h5>Dates with Change</h5>
+                        </div>
+                    </div>
+                    Ut porttitor quis tellus non consequat. Phasellus euismod diam nec nibh iaculis, ut pretium orci mollis. Nam neque velit, vehicula sit amet mauris nec, ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum. ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum amet mauris necin ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum..
+                </div>
+            </div>
+        </div>
+        </main>
+        <!--
+            the scripts are here
+        -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script>
+        $(function() {
+            var today = moment();
+            var tomorrow = moment().add(1, 'days');
+            $('input[name="daterange"]').daterangepicker({
+                opens: 'left',
+                startDate: today,
+                endDate: tomorrow,
+                minDate: today,
+            }, function(start, end, label) {
+                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            });
+        });
+    </script>
+    <script>
+        // JavaScript function to format the input value with commas
+        function formatCurrency(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+            value = Number(value).toLocaleString(); // Use JavaScript's toLocaleString to add commas
+            input.value = value;
+        }
+    </script>
+    <!--
+        the scripts end
+    -->
+    </body>
+</html>
