@@ -34,6 +34,8 @@ class SuiteMods(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
 
+    dates_moded = db.relationship('PriceMods', backref='room', lazy=True)
+
 class PriceMods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     suite_price = db.Column(db.Integer, nullable=True)
