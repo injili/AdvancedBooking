@@ -6,7 +6,9 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.3.0/dist/autoNumeric.min.js"></script>
     <style>
         body {
             background-color: #fff;
@@ -72,9 +74,7 @@
             <div class="row container-fluid">
                 <div class="col-md-8 align-items-center">
                     <div class="neomorphic-border">
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eget eros vel nisl fermentum luctus. Quisque convallis sem nec nisi vulputate venenatis. Nam eleifend nisl erat, id ornare dolor suscipit vel. Ut porttitor quis tellus non consequat. Phasellus euismod diam nec nibh iaculis, ut pretium orci mollis. Nam neque velit, vehicula sit amet mauris nec ullamcorper dignissim dui. Nam iaculis lorem nec metus viverra, non efficitur ante interdum.,
-                        </p>
+                        <table id="">
                     </div>
                 </div>
                 <div class="col align-items-center">
@@ -90,90 +90,57 @@
                         <div class="mb-3 col">
                             <label for="suite" class="form-label">Suite</label>
                             <select id="suite" name="suite" class="form-select">
-                                <option value="superior">Superior Deluxe Suite</option>
-                                <option value="deluxe">Deluxe Suite</option>
+                                <option value="Superior">Superior Deluxe Suite</option>
+                                <option value="Deluxe">Deluxe Suite</option>
                             </select>
                         </div>
                         <div class="mb-3 col">
                             <label for="suiteprice" class="form-label">Price per Night</label>
-                            <input value="0" type="text" class="form-control" id="suiteprice" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            <input value="0" type="text" class="form-control" id="suiteprice">
                         </div>
                         <div class="mb-3 col">
                             <label for="extraperson" class="form-label">Extra Person Charge</label>
-                            <input value="0" type="text" class="form-control" id="extraperson" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                            <input value="0" type="text" class="form-control" id="extraperson">
                         </div>
                         <h5>MEAL PLANS</h5>
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="bnb" class="form-label">Bed and Breakfast</label>
-                                <input value="0" type="text" class="form-control" id="bnb" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="bnb">
                             </div>
                             <div class="mb-3 col">
                                 <label for="halfboard" class="form-label">Half Board</label>
-                                <input value="0" type="text" class="form-control" id="halfboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="halfboard">
                               </div>
                         </div>
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="fullboard" class="form-label">Full Board</label>
-                                <input value="0" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="fullboard">
                             </div>
                             <div class="md-3 col">
                                 
                             </div>
                         </div>
-                        <input type="submit" value="submit" class="btn btn-r">
+                        <button type="button" class="btn btn-r" onclick="checker()">Submit</button>
                     </form>
                     </div>
                 </div>
                 <div class="neomorphic-border">
                     <h3>Standard Pricing</h3>
                     <form>
-                        <div class="row">
-                            <div class="md-3 col">
-                                <h5>Suite Prices</h5>
-                                <label for="fullboard" class="form-label">Superior Deluxe Suite</label>
-                                <input value="6,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                                <label for="fullboard" class="form-label">Deluxe Suite</label>
-                                <input value="5,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                            </div>
-                            <div class="md-3 col">
-                                <h5>Extra Person Charge</h5>
-                                <label for="fullboard" class="form-label">Superior Deluxe Suite</label>
-                                <input value="1,500" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                                <label for="fullboard" class="form-label">Deluxe Suite</label>
-                                <input value="1,200" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                            </div>
-                            <div class="md-3 col">
-                                <h5>Meal Plan Prices</h5>
-                                <div class="row">
-                                    <div class="md-3 col">
-                                        <label for="fullboard" class="form-label">Bed and Breakfast</label>
-                                        <input value="2,500" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                                        <label for="fullboard" class="form-label">Full Board</label>
-                                        <input value="4,000" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                                    </div>
-                                    <div class="md-3 col">
-                                        <label for="fullboard" class="form-label">Half Board</label>
-                                        <input value="3,200" type="text" class="form-control" id="fullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <form>
                         <h5>Suite Settings</h5>
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="standardsuite" class="form-label">Suite</label>
                                 <select id="standardsuite" name="standardsuite" class="form-select">
-                                    <option value="superior">Superior Deluxe Suite</option>
-                                    <option value="deluxe">Deluxe Suite</option>
+                                    <option value="Superior">Superior Deluxe Suite</option>
+                                    <option value="Deluxe">Deluxe Suite</option>
                                 </select>
                             </div>
                             <div class="mb-3 col">
                                 <label for="standardsuiteprice" class="form-label">Price per Night</label>
-                                <input value="0" type="text" class="form-control" id="standardsuiteprice" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="standardsuiteprice">
                             </div>
                             <div class="mb-3 col">
                                 <label for="standardextraperson" class="form-label">Extra Person Charge</label>
@@ -196,7 +163,7 @@
                                 <input value="0" type="text" class="form-control" id="standardfullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
                             </div>
                         </div>
-                        <input type="submit" value="submit" class="btn btn-r">
+                        <button type="button" class="btn btn-r" onclick="checkStandard()">Submit</button>
                     </form>
                 </div>
             </div>
@@ -209,7 +176,13 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.3.0/dist/autoNumeric.min.js"></script>
+    <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script>
+
+        const priceMod = {};
+        const standard = {};
+
         $(function() {
             var today = moment();
             var tomorrow = moment().add(1, 'days');
@@ -220,19 +193,202 @@
                 minDate: today,
             }, function(start, end, label) {
                 console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+
+                priceMod.start_date = start.format('DD-MM-YYYY');
+                priceMod.end_date = end.format('DD-MM-YYYY');
             });
         });
-    </script>
-    <script>
-        // JavaScript function to format the input value with commas
-        function formatCurrency(input) {
-            let value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
-            value = Number(value).toLocaleString(); // Use JavaScript's toLocaleString to add commas
-            input.value = value;
+
+        function cur(id) {
+            return new AutoNumeric(`${id}`, {
+                currencySymbol: 'Ksh. ',
+                decimalCharacter: '.',
+                digitGroupSeparator: ','
+            });
         }
+
+        const suiteprice = cur('#suiteprice');
+        const extraperson = cur('#extraperson');
+        const bnb = cur('#bnb');
+        const halfboard = cur('#halfboard');
+        const fullboard = cur('#fullboard');
+        const standardsuiteprice = cur('#standardsuiteprice');
+        const standardextraperson = cur('#standardextraperson');
+        const standardbnb = cur('#standardbnb');
+        const standardhalfboard = cur('#standardhalfboard');
+        const standardfullboard = cur('#standardfullboard');
+
+        function actionSubmit() {
+            priceMod.suite = document.getElementById('suite').value;
+            priceMod.suiteprice = suiteprice.rawValue;
+            priceMod.extraperson = extraperson.rawValue;
+            priceMod.bnb = bnb.rawValue;
+            priceMod.halfboard = halfboard.rawValue;
+            priceMod.fullboard = fullboard.rawValue;
+
+            fetch('/action_mods', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(priceMod)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Modifications to the prices submitted successfully');
+            })
+            .catch(error => {
+                console.error('Error while submitting the price modifications');
+            });
+        }
+
+
+        function standardSubmit() {
+            standard.suite = document.getElementById('standardsuite').value;
+            standard.suiteprice = standardsuiteprice.rawValue;
+            standard.extraperson = standardextraperson.rawValue;
+            standard.bnb = standardbnb.rawValue;
+            standard.halfboard = standardhalfboard.rawValue;
+            standard.fullboard = standardfullboard.rawValue;
+
+            fetch('/update_standard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(standard)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Standard pricing moded');
+            })
+            .catch(error => {
+                console.error('Error while submitting the standard pricing');
+            });
+        }
+
+        function checker() {
+            if (
+                suiteprice.rawValue < 1 ||
+                extraperson.rawValue < 1 ||
+                bnb.rawValue < 1 ||
+                halfboard.rawValue < 1 ||
+                fullboard.rawValue < 1
+            ) {
+                alert('Please fill in all fields.');
+            }
+            else {
+                actionSubmit()
+            }
+        }
+
+        function checkstandard() {
+            if (
+                standardsuiteprice.rawValue < 1 ||
+                standardextraperson.rawValue < 1 ||
+                standardbnb.rawValue < 1 ||
+                standardhalfboard.rawValue < 1 ||
+                standardfullboard.rawValue < 1
+            ) {
+                alert('Please fill in all fields to update the standard pricing')
+            }
+            else {
+                standardSubmit()
+            }
+        }
+
+        let userTable = new DateTable('#example', {
+            ajax: '/get_users',
+            columns: [
+                {
+                    className: 'dt-control',
+                    orderable: false,
+                    data: null,
+                    defaultContent: ''
+                },
+                { data: 'fname' },
+                { data: 'lname' },
+                { data: 'email' },
+                { data: 'phone' }
+            ],
+            order: [[1, 'asc']],
+            rowId: 'id',
+            stateSave: true
+        });
+
+        userTable.on('requestChild.dt', function (e, row) {
+            row.child(formatUserDetails(row.data())).show();
+        });
+
+        userTable.on('click', 'tb.dt-control', function (e) {
+            let tr = e.target.closest('tr');
+            let row = userTable.row(tr);
+
+            if (row.child.isShown()) {
+                row.child.hide();
+            } else {
+                row.child(formatUserDetails(row.data())).show();
+            }
+        });
+
+        function formatUserDetails(user) {
+            return (
+                '<dl>' +
+                    '<dt>Nationality:</dt>' +
+                        '<dd>' + user.nationality + '</dd>' +
+                    '<dt>Passport:</dt>' +
+                        '<dd>' + user.passport + '</dd>' +
+                    '<dt>Gender:</dt>' +
+                        '<dd>' + user.gender + '</dd>' +
+                    '<dt>Rooms:</dt>' +
+                        '<dd>' + user.no_rooms + '</dd>' +
+                    '<dt>Checkin:</dt>' +
+                        '<dd>' + user.checkin + '</dd>' +
+                    '<dt>Checkout:</dt>' +
+                        '<dd>' + user.checkout + '</dd>' +
+                    '<dt>Suite:</dt>' +
+                        '<dd>' + user.suite + '</dd>' +
+                    '<dt>Rooms Booked:</dt>' +
+                        '<dd>' +
+                            '<table id="roomTable" class="display">' +
+                                '<thead>' +
+                                    '<tr>' +
+                                        '<th>Adults</th>' +
+                                        '<th>Preteens</th>' +
+                                        '<th>Kids</th>' +
+                                        '<th>Infants</th>' +
+                                        '<th>Meal Plan</th>' +
+                                    '</tr>' +
+                                '</thead>' +
+                                '<tbody></tbody>' +
+                            '</table>' +
+                        '</dd>' +
+                '</dl>'
+            );
+        }
+
+        let roomsTable;
+
+        userTable.on('childShown.dt', function (e, details, data) {
+            let userId = data.id;
+
+            roomTable = $('#roomsTable').DataTable({
+                ajax: '/get_rooms' + userId,
+                columns: [
+                    { data: 'adults' },
+                    { data: 'preteens' },
+                    { data: 'kids' },
+                    { data: 'infants' },
+                    { data: 'meal_plan' }
+                ]
+            });
+        });
+
+        userTable.on('childHidden.dt', function () {
+            if (roomsTable) {
+                roomsTable.destroy();
+            }
+        });
     </script>
-    <!--
-        the scripts end
-    -->
     </body>
 </html>

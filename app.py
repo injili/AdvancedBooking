@@ -46,8 +46,8 @@ def store_data():
             passport=user_data.get('passport'),
             gender=user_data.get('gender'),
             no_rooms=user_data.get('no_rooms'),
-            checkin=user_data.get('checkin'),
-            checkout=user_data.get('checkout'),
+            checkin=datetime.strptime(user_data.get('checkin'), '%d-%m-%Y').date(),
+            checkout=datetime.strptime(user_data.get('checkout'), '%d-%m-%Y').date(),
             suite=user_data.get('suite'),
             amount=user_data.get('amount')
         )
@@ -55,7 +55,7 @@ def store_data():
         db.session.flush()
         
         for room_info in room_data:
-            room = DeluxeRoomBookings(
+            room = RoomBookings(
                 adults=room_info.get('adults', 0),
                 preteens=room_info.get('preteens', 0),
                 kids=room_info.get('kids', 0),
@@ -68,6 +68,73 @@ def store_data():
         db.session.commit()
 
         return jsonify({'message': 'Data stored successfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/action_mods', methods=['POST'])
+def action_mods():
+    try:
+        data = request.get_json()
+
+        room = SuiteMods(
+            room_type=data['suite'],
+            start_date=data['start_date'],
+            end_date=data['end_date']
+        )
+
+        db.session.add(room)
+        db.session.flush()
+
+        pricing = PriceMods(
+            suite_price=data['suiteprice'],
+            extra_charge=data['extraperson'],
+            bed_breakfast=data['bnb'],
+            full_board=data['halfboard'],
+            half_board=data['fullboard'],
+            room=room
+        )
+
+        db.session.add(pricing)
+        db.session.commit()
+
+        return jsonify({'message': 'The modifications have been done successsfully'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/update_standard', methods=['POST'])
+def update_standard():
+    try :
+        data = request.get_json()
+        standard = None
+
+        if data['suite'] == 'Deluxe':
+            standard = StandardPricing.query.filter_by(room_type='Deluxe').first()
+        else:
+            standard = StandardPricing.query.filter_by(room_type='Superior').first()
+
+        if standard:
+            standard.room_type=data['suite']
+            standard.suite_price=data['suiteprice']
+            standard.extra_charge=data['extraperson']
+            standard.bed_breakfast=data['bnb']
+            standard.half_board=data['halfboard']
+            standard.full_board-data['fullboard']
+        else:
+            new = StandardPricing(
+                room_type=data['suite'],
+                suite_price=data['suiteprice'],
+                extra_charge=data['extraperson'],
+                bed_breakfast=data['bnb'],
+                half_board=data['halfboard'],
+                full_board=data['fullboard']
+            )
+            db.session.add(new)
+
+        db.session.commit()
 
     except Exception as e:
         db.session.rollback()

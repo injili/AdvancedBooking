@@ -17,9 +17,9 @@ class UserTable(db.Model):
     suite = db.Column(db.String(25), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
 
-    rooms_booked = db.relationship('DeluxeRoomBookings', backref='user', lazy=True)
+    rooms_booked = db.relationship('RoomBookings', backref='user', lazy=True)
 
-class DeluxeRoomBookings(db.Model):
+class RoomBookings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     adults = db.Column(db.Integer, nullable=False)
     preteens = db.Column(db.Integer, nullable=False)
@@ -38,12 +38,11 @@ class SuiteMods(db.Model):
 
 class PriceMods(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    suite_price = db.Column(db.Integer, nullable=True)
-    extra_charge = db.Column(db.Integer, nullable=True)
-    bed_breakfast = db.Column(db.Integer, nullable=True)
-    full_board = db.Column(db.Integer, nullable=True)
-    half_board = db.Column(db.Integer, nullable=True)
-    day_room = db.Column(db.Integer, nullable=True)
+    suite_price = db.Column(db.Integer, nullable=False)
+    extra_charge = db.Column(db.Integer, nullable=False)
+    bed_breakfast = db.Column(db.Integer, nullable=False)
+    full_board = db.Column(db.Integer, nullable=False)
+    half_board = db.Column(db.Integer, nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey('suite_mods.id'), nullable=False)
 
 class StandardPricing(db.Model):
@@ -52,6 +51,5 @@ class StandardPricing(db.Model):
     suite_price = db.Column(db.Integer, nullable=False)
     extra_charge = db.Column(db.Integer, nullable=False)
     bed_breakfast = db.Column(db.Integer, nullable=True)
-    full_board = db.Column(db.Integer, nullable=True)
-    half_board = db.Column(db.Integer, nullable=True)
-    day_room = db.Column(db.Integer, nullable=True)
+    half_board = db.Column(db.Integer, nullable=False)
+    full_board = db.Column(db.Integer, nullable=False)
