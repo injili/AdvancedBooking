@@ -140,5 +140,60 @@ def update_standard():
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+@app.route('/get_users', methods=['GET'])
+def get_users():
+    user = UserTable.query.all()
+    user_data = []
+
+    for user in users:
+        user_info = {
+            'id': user.id,
+            'fname': user.fname,
+            'lname': user.lname,
+            'email': user.email,
+            'phone': user.phone,
+            'nationality': user.nationality,
+            'passport': user.passport,
+            'gender': user.gender,
+            'no_rooms': user.no_rooms,
+            'checkin': user.checkin.strftime('%d-%m-%Y'),
+            'checkout': user.checkout.strftime('%d-%m-%Y'),
+            'suite': user.suite,
+            'amount': user.amount,
+            'rooms_booked': []
+        }
+
+        for booking in user.rooms_booked:
+            room_info = {
+                'adults': booking.adults,
+                'preteens': booking.preteens,
+                'kids': booking.kids,
+                'infants': booking.infants,
+                'meal_plan': booking.meal_plan
+            }
+            user_info['room_booked'].append(room_info)
+
+        user_data.apend(user_info)
+    return jsonify({'data': user_data})
+
+@app.route('/get_rooms/<int:user_id>', methods=['GET'])
+def get_rooms(user_id):
+    user = userTable.query.get(user_id)
+    if user is None:
+        return jsonify({'error': 'User not found'}), 404
+
+    rooms_data = []
+    for booking in user.rooms_booked:
+        room_info = {
+            'adults': booking.adults,
+            'preteens': booking.preteens,
+            'kids': booking.kids,
+            'infants': booking.infants,
+            'meal_plan': booking.meal_plan
+        }
+        room_data.append(room_info)
+
+    return jsonify({'data': rooms_data})
+
 if __name__ == '__main__' :
     app.run(port=8888, debug=True)

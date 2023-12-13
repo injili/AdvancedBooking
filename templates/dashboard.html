@@ -74,7 +74,18 @@
             <div class="row container-fluid">
                 <div class="col-md-8 align-items-center">
                     <div class="neomorphic-border">
-                        <table id="">
+                        <table id="example" class="display">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="col align-items-center">
@@ -172,6 +183,7 @@
         <!--
             the scripts are here
         -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -320,7 +332,7 @@
             row.child(formatUserDetails(row.data())).show();
         });
 
-        userTable.on('click', 'tb.dt-control', function (e) {
+        userTable.on('click', 'td.dt-control', function (e) {
             let tr = e.target.closest('tr');
             let row = userTable.row(tr);
 
@@ -369,18 +381,20 @@
 
         let roomsTable;
 
-        userTable.on('childShown.dt', function (e, details, data) {
-            let userId = data.id;
+        userTable.on('click', 'tr', function () {
+            var data = userTable.row(this).data();
+            var userId = data.id;
 
-            roomTable = $('#roomsTable').DataTable({
-                ajax: '/get_rooms' + userId,
-                columns: [
-                    { data: 'adults' },
-                    { data: 'preteens' },
-                    { data: 'kids' },
-                    { data: 'infants' },
-                    { data: 'meal_plan' }
-                ]
+            $.ajax({
+                url: '/get_rooms/' + userId,
+                type: 'GET',
+                success: function (response) {
+                    roomsTable.clear().draw();
+                    roomsTable.rows.add(response.data).draw();
+                },
+                error: function (error) {
+                    console.error('Error fetching room information:', error);
+                }
             });
         });
 
