@@ -29,6 +29,10 @@ def set_timezone():
 def home():
     return render_template('index.html')
 
+@app.route('/dashboard', strict_slashes=False)
+def dashboard():
+    return render_template('dashboard.html')
+
 @app.route('/store_data', methods=['POST'])
 def store_data():
     try:

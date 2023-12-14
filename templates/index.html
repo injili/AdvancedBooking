@@ -100,9 +100,9 @@
                 <div class="mb-3">
                     <label for="thedates" class="form-label">Check In - Check Out</label>
                     <input type="text" class="form-control" id="thedates" name="daterange"/>
-                    <div id="thedates" class="form-text">Select the dates you would like to visit.</div>
+                    <div id="theDatesMessage" class="form-text">Select the dates you would like to visit.</div>
 
-                    <button class="btn" type="button" onclick="nextStep(1);">CHECK AVAILABILITY</button>
+                    <button class="btn" type="button" onclick="checkAvailability()">CHECK AVAILABILITY</button>
 
                 </div>
                 <!--div class="form-group">
@@ -238,10 +238,37 @@
             });
         });
 
+        function checkAvailability() {
+            const roomType = 'Deluxe';
+
+            fetch(`/get_min_available_rooms?checkin=${checkin}&checkout=${checkout}&suite_type=${roomType}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        if (data.min_available_rooms > 0) {
+                            let min_available = data.min_available_rooms;
+
+                            document.getElementById('theDatesMessage').textContent = `${min_available} rooms available for these dates.`;
+                            document.getElementById('no_rooms').max = min_available;
+                            fetchPricing();
+                            nextStep(1);
+                        } else {
+                            document.getElementById('theDatesMessage').textContent = 'All rooms are booked for this dates. Try a different suite.';
+                            console.log('No available Rooms for those dates')
+                        }
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
         function fetchPricing() {
             const roomType = 'Deluxe';
 
-            fetch('/get_pricing?room_type=${roomType}&checkin=${checkin}&checkout=${checkout}')
+            fetch(`/get_pricing?room_type=${roomType}&checkin=${checkin}&checkout=${checkout}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
@@ -272,32 +299,6 @@
                 readOnly: true
             });
         }
-
-        // document.getElementById('checkin').addEventListener('input', function() {
-        //     var checkinDate = new Date(this.value);
-        //     var today = new Date();
-        //     today.setDate(today.getDate() - 1)
-    
-        //     if (checkinDate < today) {
-        //         alert("Check-in date cannot be before today");
-        //         this.value = '';
-        //     } else {
-        //         document.getElementById('checkout').min = this.value;
-        //         document.getElementById('checkout').value = '';
-        //     }
-
-        // });
-    
-        // document.getElementById('checkout').addEventListener('change', function() {
-        //     var checkinDate = new Date(document.getElementById('checkin').value);
-        //     var checkoutDate = new Date(this.value);
-        //     var today = new Date()
-    
-        //     if (checkoutDate <= checkinDate || checkoutDate <= today) {
-        //         alert("Check-out date cannot be today or before the Check-in date");
-        //         this.value = '';
-        //     }
-        // });
 
         function updateNationalities() {
             const nationalityDropdown = document.getElementById('nationality');
@@ -356,11 +357,11 @@
 
                         <div class="form-outline mb-2">
                             <label for="meal${i}">Meal Plan</label>
-                            <select id="meal${i}" name="meal${i}" class="form-control" onchange="" required>
-                                <option value="bed and breakfast">B&B</option>
-                                <option value="full board">Full Board</option>
-                                <option value="half board">Half Board</option>
-                                <option value="day room">Day Room</option>
+                            <select id="meal${i}" name="meal${i}" class="form-control" onchange="forThisDiv(${i})" required>
+                                <option value="bed_breakfast">B&B</option>
+                                <option value="full_board">Full Board</option>
+                                <option value="half_board">Half Board</option>
+                                <option value="day_room">Day Room</option>
                             </select>
                         </div>
 
@@ -373,36 +374,6 @@
                 roomConfigurationsContainer.innerHTML += roomConfiguration;
             }
         }
-
-        // function submitRoomForm() {
-
-        //     const roomData = []
-
-        //     for (let i = 1; i <= noRooms; i++) {
-        //         const roomInfo = {
-        //             adults: document.getElementById('adults${i}').value,
-        //             preteens: document.getElementById('preteens${i}').value,
-        //             kids: document.getElementById('kids${i}').value,
-        //             meal_plan: document.getElementById('meal${i}').value
-        //         };
-
-        //         roomData.push(roomInfo);
-        //     }
-
-        //     fetch('/store_rooms', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type' : 'application/json'
-        //         },
-        //         body: JSON.stringify({ rooms: roomData })
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log(data);
-        //     })
-        // }
-
-
 
         function calculateGrandTotal() {
             if (peopleTotals.includes(0)) {
@@ -425,9 +396,11 @@
 
             document.querySelectorAll('#step-4, #step-5').forEach(step => step.style.display = 'none');
 
-            var adults = parseInt(document.getElementById('adults' + roomNumber).value);
-            var preteens = parseInt(document.getElementById('preteens' + roomNumber).value);
-            var kids = parseInt(document.getElementById('kids' + roomNumber).value);
+            let adults = parseInt(document.getElementById('adults' + roomNumber).value);
+            let preteens = parseInt(document.getElementById('preteens' + roomNumber).value);
+            let kids = parseInt(document.getElementById('kids' + roomNumber).value);
+            let meal_plan = document.getElementById('meal' + roomNumber).value;
+            let heads = adults + preteens + kids;
 
             document.getElementById('adults' + roomNumber).max = 2 - preteens - kids;
             document.getElementById('preteens' + roomNumber).max = 2 - adults - kids;
@@ -440,38 +413,46 @@
                 document.getElementById('infants' + roomNumber).max = 0
             }
 
-            const rackRate = 6500;
-            const extraCharge = 1500;
-
-            if ((adults + preteens + kids) == 1) {
-                totalRoomCost = rackRate;
+            if ((heads) == 1) {
+                totalRoomCost = suitePrice;
             }
-            else if ((adults + preteens + kids) == 2) {
+            else if ((heads) == 2) {
                 if (adults > 0) {
                     if (preteens == 1) {
-                        totalRoomCost = (0.75 * extraCharge) + rackRate
+                        totalRoomCost = (0.75 * extraCharge) + suitePrice
                     }
                     else if (kids == 1) {
-                        totalRoomCost = (0.5 * extraCharge) + rackRate
+                        totalRoomCost = (0.5 * extraCharge) + suitePrice
                     }
                     else {
-                        totalRoomCost = rackRate + extraCharge
+                        totalRoomCost = suitePrice + extraCharge
                     }
                 }
                 else if (preteens > 0) {
                     if (kids == 1) {
-                        totalRoomCost = (0.5 * extraCharge) + rackRate
+                        totalRoomCost = (0.5 * extraCharge) + suitePrice
                     }
                     else {
-                        totalRoomCost = (0.75 * extraCharge) + rackRate
+                        totalRoomCost = (0.75 * extraCharge) + suitePrice
                     }
                 }
                 else {
-                    totalRoomCost = (0.5 * extraCharge) + rackRate
+                    totalRoomCost = (0.5 * extraCharge) + suitePrice
                 }
             }
+
+            if (meal_plan == 'bed_breakfast') {
+                totalRoomCost = totalRoomCost + (bnb * heads);
+            } else if (meal_plan == 'half_board') {
+                totalRoomCost = totalRoomCost + (halfBoard * heads);
+            } else if (meal_plan == 'full_board') {
+                totalRoomCost = totalRoomCost + (fullBoard * heads);
+            } else {
+                totalRoomCost = totalRoomCost * 0.75;
+            }
+
             roomTotals[roomNumber - 1] = totalRoomCost
-            peopleTotals[roomNumber - 1] = (adults + preteens + kids)
+            peopleTotals[roomNumber - 1] = (heads)
         }
 
         function submitForms() {
