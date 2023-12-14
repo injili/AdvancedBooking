@@ -237,5 +237,80 @@ def get_pricing():
 
     return jsonify({'data': pricing_list})
 
+
+@app.route('/get_min_available_rooms', methods=['GET'])
+def get_min_available_rooms():
+    try:
+        checkin_date = request.args.get('checkin')
+        checkout_date = request.args.get('checkout')
+        suite_type = request.args.get('suite_type')
+
+        checkin_dat = datetime.strptime(checkin_date, '%d-%m-%Y').date()
+        checkout_date = datetime.strptime(checkout_date, '%d-%m-%Y').date()
+
+        available_rooms_dict = {}
+
+        current_date = checkin_date
+        while current_date <= checkout_date:
+            reservations = UserTable.query.filter(
+                (UserTable.checkin <= current_date) & (UserTable.checkout >= current_date) &
+                (UserTable.suite == suite_type)
+            ).all()
+
+            total_rooms_for_suite = 12 if suite_type == 'Deluxe' else 6
+            reserved_rooms = sum(reservation.no_rooms for reservation in reservations)
+            available_rooms = total_rooms_for_site - reserved_rooms
+
+            available_rooms_dict[str(current_date)] = available_rooms
+
+            current_date += timedelta(days=1)
+        
+        min_available_rooms = min(available_rooms_dict.values())
+
+        return jsonify({
+            'status': 'success',
+            'available_rooms' : available_rooms_dict,
+            'min_available_rooms': min_available_rooms
+        })
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/get_pricing', methods=['GET'])
+def get_pricing():
+    try:
+        room_type = request.args.get('room_type')
+        checkin_date = request.args.get('checkin')
+        checkout_date = request.args.get('checkout')
+
+        checkin_date = datetime.strptime(checkin_date, '%d-%m-%Y').date()
+        checkout_date = datetime.strptime(checkout_date, '%d-%m-%Y').date()
+
+        suite_mods_entry = SuiteMods.query.filter(
+            (SuiteMods.rom_type == room_type) &
+            ((SuiteMods.start_date <= checkin_date) & (SuiteMods.end_date >= checkin_date) |
+             (SuiteMods.start_date <= checkout_date) & (SuiteMods.end_date >= checkout_date))
+        ).first()
+
+        if suite_mods_entry:
+            prices = suite_mods_entry.dates_moded
+        else:
+            prices = StandardPricing.query.filter(StandardPricing.room_type == room_type).first()
+
+        if prices:
+            return jsonify({
+                'status': 'success',
+                'suite_price': prices.suite_price,
+                'extra_charge': prices.extra_charge,
+                'bed_breakfast': prices.bed_breakfast,
+                'half_board': prices.half_board,
+                'full_board': prices.full_board
+            })
+        else:
+            return jsonify({'status': 'error', 'message': 'No pricing information found for the specified criteria'})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
 if __name__ == '__main__':
     app.run(port=8888, debug=True)
