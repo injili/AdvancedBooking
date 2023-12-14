@@ -86,6 +86,22 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                        <table id="suiteModsTable" class="display">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Room Type</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Suite Price</th>
+                                    <th>Extra Charge</th>
+                                    <th>Bed & Breakfast</th>
+                                    <th>Full Board</th>
+                                    <th>Half Board</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="col align-items-center">
@@ -176,6 +192,20 @@
                         </div>
                         <button type="button" class="btn btn-r" onclick="checkStandard()">Submit</button>
                     </form>
+                    <table id="pricingTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Room Type</th>
+                                <th>Suite Price</th>
+                                <th>Extra Charge</th>
+                                <th>Bed & Breakfast</th>
+                                <th>Half Board</th>
+                                <th>Full Board</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -403,6 +433,44 @@
                 roomsTable.destroy();
             }
         });
+
+        $(document).ready(function() {
+            var pricingTable = $('#pricingTable').DataTable({
+                ajax: '/get_pricing',
+                columns: [
+                    { data: 'id' },
+                    { data: 'room_type' },
+                    { data: 'suite_price' },
+                    { data: 'extra_charge' },
+                    { data: 'bed_breakfast' },
+                    { data: 'half_board' },
+                    { data: 'full_board' }
+                ],
+                order: [[1, 'asc']],
+                rowId: 'id',
+                stateSave: true
+            });
+        });
+
+        $(document).ready(function() {
+            var suiteModsTable = $('#suiteModsTable').DataTable({
+                ajax: '/get_suite_mods',
+                columns: [
+                    { data: 'id' },
+                    { data: 'room_type' },
+                    { data: 'start_date' },
+                    { data: 'end_date' },
+                    { data: 'price_mods.suite_price' },
+                    { data: 'price_mods.extra_charge' },
+                    { data: 'price_mods.bed_breakfast' },
+                    { data: 'price_mods.full_board' },
+                    { data: 'price_mods.half_board' },
+                ],
+                order: [[1, 'asc']],
+                rowId: 'id',
+                stateSave: true
+            })
+        })
     </script>
     </body>
 </html>

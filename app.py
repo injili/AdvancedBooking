@@ -142,7 +142,7 @@ def update_standard():
 
 @app.route('/get_users', methods=['GET'])
 def get_users():
-    user = UserTable.query.all()
+    users = UserTable.query.all()
     user_data = []
 
     for user in users:
@@ -195,5 +195,47 @@ def get_rooms(user_id):
 
     return jsonify({'data': rooms_data})
 
-if __name__ == '__main__' :
+@app.route('/get_mods', methods=['GET'])
+def get_mods():
+    mods = SuiteMods.query.all()
+    mods_data = []
+
+    for mod in mods:
+        mods_info = {
+            'id': mod.id,
+            'room_type': mod.room_type.strftime('%d-%m-%Y'),
+            'start_date': mod.start_date.strftime('%d-%m-%Y'),
+            'end_date': mod.end_date,
+            'price_mods': {
+                'suite_price': mod.dates_moded.suite_price,
+                'extra_charge': mod.dates_moded.extra_charge,
+                'bed_breakfast': mod.dates_moded.bed_breakfast,
+                'full_board': mod.dates_moded.full_board,
+                'half_board': mod.dates_moded.half_board
+            }
+        }
+        mods_data.append(mods_info)
+
+    return jsonify({'data': mods_data})
+
+@app.route('/get_pricing', methods=['GET'])
+def get_pricing():
+    pricing_data = StandardPricing.query.all()
+    pricing_list = []
+
+    for pricing in pricing_data:
+        pricing_info = {
+            'id': pricing.id,
+            'room_type': pricing.room_type,
+            'suite_price': pricing.suite_price,
+            'extra_charge': pricing.extra_charge,
+            'bed_breakfast': pricing.bed_breakfast,
+            'half_board': pricing.half_board,
+            'full_board': pricing.full_board
+        }
+        pricing_list.append(pricing_info)
+
+    return jsonify({'data': pricing_list})
+
+if __name__ == '__main__':
     app.run(port=8888, debug=True)
