@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, request, redirect, url_for, j
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import pytz
-from models import db, UserTable, DeluxeRoomBookings
+from models import db, UserTable, RoomBookings, SuiteMods, PriceMods, StandardPricing
 
 app = Flask(__name__)
 
@@ -83,7 +83,7 @@ def action_mods():
         data = request.get_json()
 
         room = SuiteMods(
-            room_type=data['suite'],
+            room_type=data['room_type'],
             start_date=data['start_date'],
             end_date=data['end_date']
         )
@@ -95,8 +95,8 @@ def action_mods():
             suite_price=data['suiteprice'],
             extra_charge=data['extraperson'],
             bed_breakfast=data['bnb'],
-            full_board=data['halfboard'],
-            half_board=data['fullboard'],
+            full_board=data['fullboard'],
+            half_board=data['halfboard'],
             room=room
         )
 
@@ -126,7 +126,7 @@ def update_standard():
             standard.extra_charge=data['extraperson']
             standard.bed_breakfast=data['bnb']
             standard.half_board=data['halfboard']
-            standard.full_board-data['fullboard']
+            standard.full_board=data['fullboard']
         else:
             new = StandardPricing(
                 room_type=data['suite'],
@@ -139,6 +139,8 @@ def update_standard():
             db.session.add(new)
 
         db.session.commit()
+
+        return jsonify({'success': True}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -222,8 +224,8 @@ def get_mods():
 
     return jsonify({'data': mods_data})
 
-@app.route('/get_pricing', methods=['GET'])
-def get_pricing():
+@app.route('/get_standard_pricing', methods=['GET'])
+def get_standard_pricing():
     pricing_data = StandardPricing.query.all()
     pricing_list = []
 

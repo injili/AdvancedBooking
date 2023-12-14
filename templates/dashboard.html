@@ -115,8 +115,8 @@
                         </div>
                         <h5>SUITE SETTINGS</h5>
                         <div class="mb-3 col">
-                            <label for="suite" class="form-label">Suite</label>
-                            <select id="suite" name="suite" class="form-select">
+                            <label for="room_type" class="form-label">Suite</label>
+                            <select id="room_type" class="form-select">
                                 <option value="Superior">Superior Deluxe Suite</option>
                                 <option value="Deluxe">Deluxe Suite</option>
                             </select>
@@ -171,7 +171,7 @@
                             </div>
                             <div class="mb-3 col">
                                 <label for="standardextraperson" class="form-label">Extra Person Charge</label>
-                                <input value="0" type="text" class="form-control" id="standardextraperson" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="standardextraperson">
                             </div>
                         </div>
                         
@@ -179,15 +179,15 @@
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="standardbnb" class="form-label">Bed and Breakfast</label>
-                                <input value="0" type="text" class="form-control" id="standardbnb" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="standardbnb">
                             </div>
                             <div class="mb-3 col">
                                 <label for="standardhalfboard" class="form-label">Half Board</label>
-                                <input value="0" type="text" class="form-control" id="standardhalfboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="standardhalfboard">
                             </div>
                             <div class="mb-3 col">
                                 <label for="standardfullboard" class="form-label">Full Board</label>
-                                <input value="0" type="text" class="form-control" id="standardfullboard" inputmode="none" pattern="[0-9]*" min="0" max="20000" oninput="formatCurrency(this)">
+                                <input value="0" type="text" class="form-control" id="standardfullboard">
                             </div>
                         </div>
                         <button type="button" class="btn btn-r" onclick="checkStandard()">Submit</button>
@@ -261,12 +261,12 @@
         const standardfullboard = cur('#standardfullboard');
 
         function actionSubmit() {
-            priceMod.suite = document.getElementById('suite').value;
+            priceMod.room_type = document.getElementById('room_type').value;
             priceMod.suiteprice = suiteprice.rawValue;
             priceMod.extraperson = extraperson.rawValue;
             priceMod.bnb = bnb.rawValue;
-            priceMod.halfboard = halfboard.rawValue;
             priceMod.fullboard = fullboard.rawValue;
+            priceMod.halfboard = halfboard.rawValue;
 
             fetch('/action_mods', {
                 method: 'POST',
@@ -324,7 +324,7 @@
             }
         }
 
-        function checkstandard() {
+        function checkStandard() {
             if (
                 standardsuiteprice.rawValue < 1 ||
                 standardextraperson.rawValue < 1 ||
@@ -339,7 +339,7 @@
             }
         }
 
-        let userTable = new DateTable('#example', {
+        let userTable = new DataTable('#example', {
             ajax: '/get_users',
             columns: [
                 {
@@ -436,7 +436,7 @@
 
         $(document).ready(function() {
             var pricingTable = $('#pricingTable').DataTable({
-                ajax: '/get_pricing',
+                ajax: '/get_standard_pricing',
                 columns: [
                     { data: 'id' },
                     { data: 'room_type' },
@@ -454,7 +454,7 @@
 
         $(document).ready(function() {
             var suiteModsTable = $('#suiteModsTable').DataTable({
-                ajax: '/get_suite_mods',
+                ajax: '/get_mods',
                 columns: [
                     { data: 'id' },
                     { data: 'room_type' },
