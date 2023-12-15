@@ -179,7 +179,8 @@
                     </select>
                 </div>
 
-                <button class="btn" type="button" value="PAY" onclick="submitForms()">PAY NOW</button>
+                <button class="btn" type="button" onclick="submitForms()">PAY NOW</button>
+                <button class="btn" type="button" onclick="genratePDF()">Download Receipt</button>
             </div>
             
         </form>
@@ -195,6 +196,7 @@
 
     <script>
         const userData = {};
+        const roomData = [];
         let checkin;
         let checkout;
         let currencyInput;
@@ -445,7 +447,6 @@
         }
 
         function submitForms() {
-            const roomData = []
             const noRooms = parseInt(document.getElementById('no_rooms').value);
 
             for (let i = 1; i <= noRooms; i++) {
@@ -502,7 +503,20 @@
 
         function genratePDF(){
             const pdf = new jsPDF();
-            pdf.text();
+
+            pdf.text("Zuri Place Hotel", 10, 10);
+
+            const {fname, lname, checkin, no_rooms, suite } = userData;
+
+            let theMessage = 'Dear ${fname} ${lname}, \n\nThank you for booking your stay! We are excited to welcome you on ${checkin} to your ${suite} Suite. See you soon! \n\nReservation information: \n\n Number of Rooms: ${no_rooms}\n\n';
+
+            roomData.forEach((room, index) => {
+                theMessage += 'Room ${index + 1} - Adults: ${room.adults}, Preteens: ${room.preteens} Kids: ${room.kids} Infants: ${room.infants} Meal Plan: ${room.meal_plan}\n';
+            });
+
+            theMessage += "zuriplacehotel.com";
+
+            pdf.text(theMessage, 10, 30);
 
             pdf.save("ZuriPlaceHotelReceipt.pdf");
         }
