@@ -29,6 +29,10 @@ def set_timezone():
 def home():
     return render_template('index.html')
 
+@app.route('/testpdf', strict_slashes=False)
+def testpdf():
+    return render_template('testpdf.html')
+
 @app.route('/dashboard', strict_slashes=False)
 def dashboard():
     return render_template('dashboard.html')

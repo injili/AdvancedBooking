@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF download</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.js"></script>
+</head>
+<body>
+    <button onclick="generate()">Download</button>
+
+    <script>
+        function generate() {
+            const pdf = `
+                <h1>Hello, this is a PDF generated with html2pdf!</h1>
+                <p>You can include any HTML content here.</p>
+            `;
+
+            html2pdf().from(pdf).save("generated-pdf-with-html2pdf.pdf");
+
+        }
+    </script>
+</body>
+</html>
