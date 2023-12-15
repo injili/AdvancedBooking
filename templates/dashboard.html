@@ -16,6 +16,12 @@
         h1 {
             margin: 30px;
         }
+        h3 {
+            margin: 20px;
+        }
+        h5 {
+            margin: 10px;
+        }
         .neomorphic-border {
             margin-top: 12px;
             margin-bottom: 17px;
@@ -74,6 +80,7 @@
             <div class="row container-fluid">
                 <div class="col-md-8 align-items-center">
                     <div class="neomorphic-border">
+                        <h3>Reservations</h3>
                         <table id="example" class="display">
                             <thead>
                                 <tr>
@@ -86,34 +93,18 @@
                             </thead>
                             <tbody></tbody>
                         </table>
-                        <table id="suiteModsTable" class="display">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Room Type</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Suite Price</th>
-                                    <th>Extra Charge</th>
-                                    <th>Bed & Breakfast</th>
-                                    <th>Full Board</th>
-                                    <th>Half Board</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
                     </div>
                 </div>
                 <div class="col align-items-center">
                     <div class="neomorphic-border">
-                        <h3>ACTIONS</h3>
+                        <h3>Actions</h3>
                     <form>
                         <div class="mb-3">
                             <label for="thedates" class="form-label">Date Selection</label>
                             <input type="text" class="form-control" id="thedates" name="daterange"/>
                             <div id="thedates" class="form-text">Select the dates you want to apply changes to.</div>
                         </div>
-                        <h5>SUITE SETTINGS</h5>
+                        <h5>Suite Settings</h5>
                         <div class="mb-3 col">
                             <label for="room_type" class="form-label">Suite</label>
                             <select id="room_type" class="form-select">
@@ -129,7 +120,7 @@
                             <label for="extraperson" class="form-label">Extra Person Charge</label>
                             <input value="0" type="text" class="form-control" id="extraperson">
                         </div>
-                        <h5>MEAL PLANS</h5>
+                        <h5>Meal Plans</h5>
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="bnb" class="form-label">Bed and Breakfast</label>
@@ -156,7 +147,6 @@
                 <div class="neomorphic-border">
                     <h3>Standard Pricing</h3>
                     <form>
-                        <h5>Suite Settings</h5>
                         <div class="row">
                             <div class="mb-3 col">
                                 <label for="standardsuite" class="form-label">Suite</label>
@@ -192,6 +182,7 @@
                         </div>
                         <button type="button" class="btn btn-r" onclick="checkStandard()">Submit</button>
                     </form>
+                    <h3>Standard Prices</h3>
                     <table id="pricingTable" class="display">
                         <thead>
                             <tr>
@@ -202,6 +193,23 @@
                                 <th>Bed & Breakfast</th>
                                 <th>Half Board</th>
                                 <th>Full Board</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <h3>Modifications</h3>
+                    <table id="suiteModsTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Room Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Suite Price</th>
+                                <th>Extra Charge</th>
+                                <th>Bed & Breakfast</th>
+                                <th>Full Board</th>
+                                <th>Half Board</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -234,7 +242,7 @@
                 endDate: tomorrow,
                 minDate: today,
             }, function(start, end, label) {
-                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+                console.log("A new date selection was made: " + start.format('DD-MM-YYYY') + ' to ' + end.format('DD-MM-YYYY'));
 
                 priceMod.start_date = start.format('DD-MM-YYYY');
                 priceMod.end_date = end.format('DD-MM-YYYY');
@@ -249,11 +257,11 @@
             });
         }
 
-        const suiteprice = cur('#suiteprice');
-        const extraperson = cur('#extraperson');
-        const bnb = cur('#bnb');
-        const halfboard = cur('#halfboard');
-        const fullboard = cur('#fullboard');
+        const suite_price = cur('#suiteprice');
+        const extra_person = cur('#extraperson');
+        const bed_breakfast = cur('#bnb');
+        const half_board = cur('#halfboard');
+        const full_board = cur('#fullboard');
         const standardsuiteprice = cur('#standardsuiteprice');
         const standardextraperson = cur('#standardextraperson');
         const standardbnb = cur('#standardbnb');
@@ -262,11 +270,11 @@
 
         function actionSubmit() {
             priceMod.room_type = document.getElementById('room_type').value;
-            priceMod.suiteprice = suiteprice.rawValue;
-            priceMod.extraperson = extraperson.rawValue;
-            priceMod.bnb = bnb.rawValue;
-            priceMod.fullboard = fullboard.rawValue;
-            priceMod.halfboard = halfboard.rawValue;
+            priceMod.suite_price = suite_price.rawValue;
+            priceMod.extra_person = extra_person.rawValue;
+            priceMod.bed_breakfast = bed_breakfast.rawValue;
+            priceMod.full_board = full_board.rawValue;
+            priceMod.half_board = half_board.rawValue;
 
             fetch('/action_mods', {
                 method: 'POST',
@@ -311,11 +319,11 @@
 
         function checker() {
             if (
-                suiteprice.rawValue < 1 ||
-                extraperson.rawValue < 1 ||
-                bnb.rawValue < 1 ||
-                halfboard.rawValue < 1 ||
-                fullboard.rawValue < 1
+                suite_price.rawValue < 1 ||
+                extra_person.rawValue < 1 ||
+                bed_breakfast.rawValue < 1 ||
+                half_board.rawValue < 1 ||
+                full_board.rawValue < 1
             ) {
                 alert('Please fill in all fields.');
             }
@@ -412,15 +420,31 @@
         let roomsTable;
 
         userTable.on('click', 'tr', function () {
-            var data = userTable.row(this).data();
-            var userId = data.id;
+            let data = userTable.row(this).data();
+            let userId = data.id;
+
+            if (!roomsTable) {
+                roomsTable = $('#roomTable').DataTable({
+                    columns: [
+                        { data: 'adults' },
+                        { data: 'preteens' },
+                        { data: 'kids' },
+                        { data: 'infants' },
+                        { data: 'meal_plan' }
+                    ],
+                });
+            }
 
             $.ajax({
                 url: '/get_rooms/' + userId,
                 type: 'GET',
                 success: function (response) {
-                    roomsTable.clear().draw();
-                    roomsTable.rows.add(response.data).draw();
+                    if (Array.isArray(response.data)) {
+                        roomsTable.clear().draw();
+                        roomsTable.rows.add(response.data).draw();
+                    }else {
+                        console.error('Invalid data structure received', response.data);
+                    }
                 },
                 error: function (error) {
                     console.error('Error fetching room information:', error);
@@ -454,17 +478,17 @@
 
         $(document).ready(function() {
             var suiteModsTable = $('#suiteModsTable').DataTable({
-                ajax: '/get_mods',
+                ajax: '/get_pricing_mods',
                 columns: [
                     { data: 'id' },
                     { data: 'room_type' },
                     { data: 'start_date' },
                     { data: 'end_date' },
-                    { data: 'price_mods.suite_price' },
-                    { data: 'price_mods.extra_charge' },
-                    { data: 'price_mods.bed_breakfast' },
-                    { data: 'price_mods.full_board' },
-                    { data: 'price_mods.half_board' },
+                    { data: 'suite_price' },
+                    { data: 'extra_charge' },
+                    { data: 'bed_breakfast' },
+                    { data: 'full_board' },
+                    { data: 'half_board' },
                 ],
                 order: [[1, 'asc']],
                 rowId: 'id',

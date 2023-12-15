@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, request, redirect, url_for, j
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import pytz
-from models import db, UserTable, RoomBookings, SuiteMods, PriceMods, StandardPricing
+from models import db, UserTable, RoomBookings, SeasonalPricing, StandardPricing
 
 app = Flask(__name__)
 
@@ -82,28 +82,29 @@ def action_mods():
     try:
         data = request.get_json()
 
-        room = SuiteMods(
+        print("data received")
+
+        start_date = datetime.strptime(data['start_date'], '%d-%m-%Y')
+        end_date = datetime.strptime(data['end_date'], '%d-%m-%Y')
+
+        print("dates received")
+        mod = SeasonalPricing(
             room_type=data['room_type'],
-            start_date=data['start_date'],
-            end_date=data['end_date']
+            start_date=start_date,
+            end_date=end_date,
+            suite_price=data['suite_price'],
+            extra_charge=data['extra_person'],
+            bed_breakfast=data['bed_breakfast'],
+            full_board=data['full_board'],
+            half_board=data['half_board']
         )
-
-        db.session.add(room)
-        db.session.flush()
-
-        pricing = PriceMods(
-            suite_price=data['suiteprice'],
-            extra_charge=data['extraperson'],
-            bed_breakfast=data['bnb'],
-            full_board=data['fullboard'],
-            half_board=data['halfboard'],
-            room=room
-        )
-
-        db.session.add(pricing)
+        print("Data added to database")
+        db.session.add(mod)
+        print("Data added rispektfully")
         db.session.commit()
+        print("Data did commit")
 
-        return jsonify({'message': 'The modifications have been done successsfully'})
+        return jsonify({'success': True}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -171,54 +172,54 @@ def get_users():
 
         for booking in user.rooms_booked:
             room_info = {
+                'id': booking.id,
                 'adults': booking.adults,
                 'preteens': booking.preteens,
                 'kids': booking.kids,
                 'infants': booking.infants,
                 'meal_plan': booking.meal_plan
             }
-            user_info['room_booked'].append(room_info)
+            user_info['rooms_booked'].append(room_info)
 
-        user_data.apend(user_info)
+        user_data.append(user_info)
     return jsonify({'data': user_data})
 
 @app.route('/get_rooms/<int:user_id>', methods=['GET'])
 def get_rooms(user_id):
-    user = userTable.query.get(user_id)
+    user = db.session.get(UserTable, user_id) 
     if user is None:
         return jsonify({'error': 'User not found'}), 404
 
     rooms_data = []
     for booking in user.rooms_booked:
         room_info = {
+            'id': booking.id,
             'adults': booking.adults,
             'preteens': booking.preteens,
             'kids': booking.kids,
             'infants': booking.infants,
             'meal_plan': booking.meal_plan
         }
-        room_data.append(room_info)
+        rooms_data.append(room_info)
 
     return jsonify({'data': rooms_data})
 
-@app.route('/get_mods', methods=['GET'])
-def get_mods():
-    mods = SuiteMods.query.all()
+@app.route('/get_pricing_mods', methods=['GET'])
+def get_pricing_mods():
+    mods = SeasonalPricing.query.all()
     mods_data = []
 
     for mod in mods:
         mods_info = {
             'id': mod.id,
-            'room_type': mod.room_type.strftime('%d-%m-%Y'),
+            'room_type': mod.room_type,
             'start_date': mod.start_date.strftime('%d-%m-%Y'),
-            'end_date': mod.end_date,
-            'price_mods': {
-                'suite_price': mod.dates_moded.suite_price,
-                'extra_charge': mod.dates_moded.extra_charge,
-                'bed_breakfast': mod.dates_moded.bed_breakfast,
-                'full_board': mod.dates_moded.full_board,
-                'half_board': mod.dates_moded.half_board
-            }
+            'end_date': mod.end_date.strftime('%d-%m-%Y'),
+            'suite_price': mod.suite_price,
+            'extra_charge': mod.extra_charge,
+            'bed_breakfast': mod.bed_breakfast,
+            'full_board': mod.full_board,
+            'half_board': mod.half_board
         }
         mods_data.append(mods_info)
 
@@ -251,7 +252,7 @@ def get_min_available_rooms():
         checkout_date = request.args.get('checkout')
         suite_type = request.args.get('suite_type')
 
-        checkin_dat = datetime.strptime(checkin_date, '%d-%m-%Y').date()
+        checkin_date = datetime.strptime(checkin_date, '%d-%m-%Y').date()
         checkout_date = datetime.strptime(checkout_date, '%d-%m-%Y').date()
 
         available_rooms_dict = {}
@@ -265,7 +266,7 @@ def get_min_available_rooms():
 
             total_rooms_for_suite = 12 if suite_type == 'Deluxe' else 6
             reserved_rooms = sum(reservation.no_rooms for reservation in reservations)
-            available_rooms = total_rooms_for_site - reserved_rooms
+            available_rooms = total_rooms_for_suite - reserved_rooms
 
             available_rooms_dict[str(current_date)] = available_rooms
 
@@ -292,14 +293,14 @@ def get_pricing():
         checkin_date = datetime.strptime(checkin_date, '%d-%m-%Y').date()
         checkout_date = datetime.strptime(checkout_date, '%d-%m-%Y').date()
 
-        suite_mods_entry = SuiteMods.query.filter(
-            (SuiteMods.rom_type == room_type) &
-            ((SuiteMods.start_date <= checkin_date) & (SuiteMods.end_date >= checkin_date) |
-             (SuiteMods.start_date <= checkout_date) & (SuiteMods.end_date >= checkout_date))
+        suite_mods_entry = SeasonalPricing.query.filter(
+            (SeasonalPricing.room_type == room_type) &
+            ((SeasonalPricing.start_date <= checkin_date) & (SeasonalPricing.end_date >= checkin_date) |
+             (SeasonalPricing.start_date <= checkout_date) & (SeasonalPricing.end_date >= checkout_date))
         ).first()
 
         if suite_mods_entry:
-            prices = suite_mods_entry.dates_moded
+            prices = SeasonalPricing.query.filter(SeasonalPricing.room_type == room_type).first()
         else:
             prices = StandardPricing.query.filter(StandardPricing.room_type == room_type).first()
 

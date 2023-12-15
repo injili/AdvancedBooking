@@ -28,22 +28,16 @@ class RoomBookings(db.Model):
     meal_plan = db.Column(db.String(25), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user_table.id'), nullable=False)
 
-class SuiteMods(db.Model):
+class SeasonalPricing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     room_type = db.Column(db.String(25), nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
-
-    dates_moded = db.relationship('PriceMods', backref='room', lazy=True)
-
-class PriceMods(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     suite_price = db.Column(db.Integer, nullable=False)
     extra_charge = db.Column(db.Integer, nullable=False)
     bed_breakfast = db.Column(db.Integer, nullable=False)
     full_board = db.Column(db.Integer, nullable=False)
     half_board = db.Column(db.Integer, nullable=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('suite_mods.id'), nullable=False)
 
 class StandardPricing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
